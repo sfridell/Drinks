@@ -170,5 +170,10 @@ cython_debug/
 # Ruff stuff:
 .ruff_cache/
 
+# Buildozer
+bin/
+icon/
+logs/
+mods/
 # PyPI configuration file
 .pypirc
