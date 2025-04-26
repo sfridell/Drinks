@@ -55,15 +55,9 @@ RUN \
 RUN \
   mkdir /home/pydevel/.ssh && chown pydevel /home/pydevel/.ssh && chmod 755 /home/pydevel/.ssh
   
-COPY \
-  id_rsa /home/pydevel/.ssh
-
-RUN \
-  chown pydevel /home/pydevel/.ssh/id_rsa && chmod 600 /home/pydevel/.ssh/id_rsa
-
 USER pydevel
   
 RUN \
-  GIT_SSH_COMMAND="ssh  -o StrictHostKeyChecking=no" git clone ssh://sfridell@192.168.11.51:/home/sfridell/emacsd /home/pydevel/.emacs.d
+  git clone https://github.com/sfridell/MyEmacs.git /home/pydevel/.emacs.d
 
   
