@@ -33,13 +33,13 @@ Builder.load_file('main.kv')
 class InputPopup(Popup):
     caller = ObjectProperty(None)
 
-    def __init__(self, caller=None, **kwargs):
+    def __init__(self, target=None, **kwargs):
         super(InputPopup, self).__init__()
-        self.caller = caller
+        self.target = target
         
     def save_input(self, *args):
-        self.caller.values.append(self.input_text.text)
-        self.caller.selected_values.append(self.input_text.text)
+        self.target.values.append(self.input_text.text)
+        self.target.text = self.input_text.text
         self.dismiss()
 
 class NewDrinkPopup(Popup):
@@ -56,6 +56,15 @@ class NewDrinkPopup(Popup):
         selector = Factory.IngredientSelectPair('mixers')
         layout.add_widget(selector)
 
+    def add_steps_selector(self):
+        layout = self.ids.steps_select
+        selector = Factory.Spinner()
+        result = drinks.process_command(['steps', "list"])
+        lines = result.getvalue().splitlines()
+        selector.text = lines[0]
+        selector.values = lines
+        selector.values = selector.values[:10]
+        layout.add_widget(selector)
         
 class IngredientSelectPair(BoxLayout):
     selection_type = ObjectProperty()
@@ -67,7 +76,12 @@ class IngredientSelectPair(BoxLayout):
         result = drinks.process_command([self.selection_type, "list"])
         lines = result.getvalue().splitlines()
         self.ids.ingredient_input.text = lines[0]
-        self.ids.ingredient_input.values = lines
+        self.ids.ingredient_input.values = self.ids.ingredient_input.values + lines
+
+    def on_value_select(self, spinner):
+        if spinner.text == '<new>':
+            popup = Factory.InputPopup(spinner)
+            popup.open()
             
 class HomeScreen(BoxLayout):
     drink_list = ObjectProperty()

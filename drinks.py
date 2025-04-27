@@ -49,6 +49,10 @@ def get_args(argv):
     parser_mixers_commands = parser_mixers.add_subparsers(dest='mixers_command')
     parser_mixers_list = parser_mixers_commands.add_parser('list')
 
+    parser_steps = subparsers.add_parser('steps')
+    parser_steps_commands = parser_steps.add_subparsers(dest='steps_command')
+    parser_steps_list = parser_steps_commands.add_parser('list')
+
     return parser.parse_args(argv)
 
 
@@ -85,6 +89,11 @@ def process_command(argv = sys.argv[1:]):
         if args.mixers_command == 'list':
             mixers = db.list_mixers()
             for s in mixers:
+                print(s, file=output)
+    elif args.command == 'steps':
+        if args.steps_command == 'list':
+            steps = db.list_steps()
+            for s in steps:
                 print(s, file=output)
                 
     return output

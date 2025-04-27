@@ -11,6 +11,7 @@ class DrinksDB:
         self._cur.execute("CREATE TABLE IF NOT EXISTS drinks(id INTEGER PRIMARY KEY AUTOINCREMENT, recipe)")
         self._cur.execute("CREATE TABLE IF NOT EXISTS spirits(spirit TEXT PRIMARY KEY)")
         self._cur.execute("CREATE TABLE IF NOT EXISTS mixers(mixer TEXT PRIMARY KEY)")
+        self._cur.execute("CREATE TABLE IF NOT EXISTS steps(step TEXT PRIMARY KEY)")
         
     def _name_from_namespec(self, namespec):
         return namespec[0:namespec.index(':')]
@@ -26,6 +27,8 @@ class DrinksDB:
             self._cur.execute(f"INSERT OR IGNORE INTO spirits VALUES (\'{self._name_from_namespec(s)}\')")
         for m in drink["mixers"]:
             self._cur.execute(f"INSERT OR IGNORE INTO mixers VALUES (\'{self._name_from_namespec(m)}\')")
+        for s in drink["steps"]:
+            self._cur.execute(f"INSERT OR IGNORE INTO steps VALUES (\'{s}\')")
         self._cur.execute(f"INSERT OR IGNORE INTO drinks VALUES (null, \'{serialized_drink}\')")
         self._con.commit()
         
@@ -61,4 +64,9 @@ class DrinksDB:
         res = self._cur.execute(f"SELECT * FROM mixers")
         mixers = res.fetchall()
         return [ m[0] for m in mixers ]
-        
+
+    def list_steps(self):
+        res = self._cur.execute(f"SELECT * FROM steps")
+        steps = res.fetchall()
+        return [ s[0] for s in steps ]
+

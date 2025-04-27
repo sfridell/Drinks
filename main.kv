@@ -11,12 +11,12 @@
             id: input_text
             multiline: False
             hint_text: "enter text"
-
         Button:
             text: "close"
             on_release: root.save_input()
 
 <IngredientSelectPair>
+    id: select_pair
     orientation: "horizontal"
     
     Spinner:
@@ -25,9 +25,10 @@
         values: [ "0.25oz", "0.5oz", "0.75oz", "1.0oz", "1.25oz", "1.5oz" ]
     Spinner:
         id: ingredient_input
-        text: "new"
-        values: [ "new" ]
-
+        text: "<new>"
+        values: [ "<new>" ]
+        on_text: select_pair.on_value_select(self)
+	
 <NewDrinkPopup>
     title: "Add a drink"
     separator_height: 0
@@ -75,6 +76,22 @@
                     theme_icon_color: "Custom"
                     icon_color: "white"
                     on_release: root.add_mixer_selector()
+
+        BoxLayout:
+            id: steps_select
+            orientation: "vertical"
+
+            BoxLayout:
+                orientation: "horizontal"
+
+                MDLabel:
+                    color: "white"
+                    text: "enter recipie steps"
+                MDIconButton:
+                    icon: "plus"
+                    theme_icon_color: "Custom"
+                    icon_color: "white"
+                    on_release: root.add_steps_selector()
 
         Button:
             text: "close"
