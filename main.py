@@ -42,6 +42,18 @@ class InputPopup(Popup):
         self.target.text = self.input_text.text
         self.dismiss()
 
+class MutableSpinner(Spinner):
+    def __init__(self, **kwargs):
+        super(MutableSpinner, self).__init__()
+        self.text = '<new>'
+        self.values = ['<new>']
+        self.bind(text=self.on_value_select)
+
+    def on_value_select(self, obj, text):
+        if text == '<new>':
+            popup = Factory.InputPopup(self)
+            popup.open()
+
 class NewDrinkPopup(Popup):
     def __init__(self, **kwargs):
         super(NewDrinkPopup, self).__init__()
@@ -58,11 +70,11 @@ class NewDrinkPopup(Popup):
 
     def add_steps_selector(self):
         layout = self.ids.steps_select
-        selector = Factory.Spinner()
+        selector = Factory.MutableSpinner()
         result = drinks.process_command(['steps', "list"])
         lines = result.getvalue().splitlines()
         selector.text = lines[0]
-        selector.values = lines
+        selector.values = ['<new>'] + lines
         selector.values = selector.values[:10]
         layout.add_widget(selector)
         
@@ -78,11 +90,6 @@ class IngredientSelectPair(BoxLayout):
         self.ids.ingredient_input.text = lines[0]
         self.ids.ingredient_input.values = self.ids.ingredient_input.values + lines
 
-    def on_value_select(self, spinner):
-        if spinner.text == '<new>':
-            popup = Factory.InputPopup(spinner)
-            popup.open()
-            
 class HomeScreen(BoxLayout):
     drink_list = ObjectProperty()
     name_re = re.compile('Name: (.*) Spirits')

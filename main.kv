@@ -23,11 +23,8 @@
         id: amount_input
         text: "1.0oz"
         values: [ "0.25oz", "0.5oz", "0.75oz", "1.0oz", "1.25oz", "1.5oz" ]
-    Spinner:
+    MutableSpinner:
         id: ingredient_input
-        text: "<new>"
-        values: [ "<new>" ]
-        on_text: select_pair.on_value_select(self)
 	
 <NewDrinkPopup>
     title: "Add a drink"
