@@ -55,18 +55,22 @@ class MutableSpinner(Spinner):
             popup.open()
 
 class NewDrinkPopup(Popup):
-    def __init__(self, **kwargs):
+    def __init__(self, caller=None, **kwargs):
         super(NewDrinkPopup, self).__init__()
+        self.spirits = []
+        self.mixers = []
+        self.steps = []
+        self.caller = caller
 
     def add_spirit_selector(self):
         layout = self.ids.spirit_select
-        selector = Factory.IngredientSelectPair('spirits')
-        layout.add_widget(selector)
+        self.spirits.append(Factory.IngredientSelectPair('spirits'))
+        layout.add_widget(self.spirits[-1])
 
     def add_mixer_selector(self):
         layout = self.ids.mixer_select
-        selector = Factory.IngredientSelectPair('mixers')
-        layout.add_widget(selector)
+        self.mixers.append(Factory.IngredientSelectPair('mixers'))
+        layout.add_widget(self.mixers[-1])
 
     def add_steps_selector(self):
         layout = self.ids.steps_select
@@ -76,14 +80,21 @@ class NewDrinkPopup(Popup):
         selector.text = lines[0]
         selector.values = ['<new>'] + lines
         selector.values = selector.values[:10]
-        layout.add_widget(selector)
+        self.steps.append(selector)
+        layout.add_widget(self.steps[-1])
+
+    def save_drink(self):
+        self.caller.save_new_drink(self.ids.name_input.text,
+                                   self.mixers,
+                                   self.spirits,
+                                   self.steps)
+        self.dismiss()
         
 class IngredientSelectPair(BoxLayout):
     selection_type = ObjectProperty()
     
     def __init__(self, selection_type, **kwargs):
         super(IngredientSelectPair, self).__init__()
-        print(selection_type)
         self.selection_type = selection_type
         result = drinks.process_command([self.selection_type, "list"])
         lines = result.getvalue().splitlines()
@@ -119,8 +130,27 @@ class HomeScreen(BoxLayout):
         popup.open()
 
     def input_new_drink(self):
-        popup = Factory.NewDrinkPopup()
+        popup = Factory.NewDrinkPopup(caller=self)
         popup.open()
+
+    def save_new_drink(self, name, mixers, spirits, steps):
+        command = [ "new" ]
+        # name
+        command = command + [ name ]
+        # get mixers
+        command = command + [ "--mixer" ]
+        for mixer in mixers:
+            command = command + [ f"{mixer.ids.ingredient_input.text}:{mixer.ids.amount_input.text[:-2]}" ]
+        # get spirits
+        command = command + [ "--spirit" ]
+        for spirit in spirits:
+            command = command + [ f"{spirit.ids.ingredient_input.text}:{spirit.ids.amount_input.text[:-2]}" ]
+        # get steps
+        command = command + [ "--step" ]
+        for step in steps:
+            command = command + [ f"{step.text}" ]
+        drinks.process_command(command)
+        self._refresh()
         
     def choose_json_file(self):
         if platform == 'android':

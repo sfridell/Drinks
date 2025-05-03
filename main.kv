@@ -38,6 +38,7 @@
         size: root.width, root.height
 
         MDTextField:
+            id: name_input
             mode: "fill"
             hint_text: "Drink name"
             max_text_length: 30
@@ -91,9 +92,13 @@
                     on_release: root.add_steps_selector()
 
         Button:
-            text: "close"
-            size_hint: 1.0, 0.2
+            text: "cancel"
+            size_hint: 1.0, 0.3
             on_release: root.dismiss()
+        Button:
+            text: "ok"
+            size_hint: 1.0, 0.3
+            on_release: root.save_drink()
 
 
 <DisplayDrinkPopup@Popup>
