@@ -48,6 +48,10 @@ class DrinksDB:
         drink = row[0][1]
         return json.loads(drink)
 
+    def remove_drink_by_name(self, name):
+        res = self._cur.execute(f"DELETE FROM drinks WHERE json_extract(recipe, \'$.name\') = \'{name}\'")
+        self._con.commit()
+        
     def import_drinks_from_file(self, filename):
         f = open(filename)
         drinks = json.load(f)    

@@ -38,6 +38,9 @@ def get_args(argv):
     parser_new.add_argument("--spirit", action="extend", nargs="+", type=str)
     parser_new.add_argument("--step", action="extend", nargs="+", type=str)
 
+    parser_new = subparsers.add_parser('remove')
+    parser_new.add_argument('name')
+
     parser_import = subparsers.add_parser('import')
     parser_import.add_argument('filename')
 
@@ -78,6 +81,8 @@ def process_command(argv = sys.argv[1:]):
             print('Not found.', file=output)
         else:
             show_drink(output, drink)
+    elif args.command == 'remove':
+        db.remove_drink_by_name(args.name)
     elif args.command == 'import':
         db.import_drinks_from_file(args.filename)
     elif args.command == 'spirits':

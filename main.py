@@ -3,10 +3,8 @@ from kivy.app import App
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 from kivy.properties import ListProperty
-from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.textinput import TextInput
 from kivy.uix.dropdown import DropDown
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.popup import Popup
@@ -30,6 +28,11 @@ if platform == 'android':
 
 Builder.load_file('main.kv')
 
+class ConfirmDeletePopup(Popup):
+    def __init__(self, parent_popup):
+        super(ConfirmDeletePopup, self).__init__()
+        self.parent_popup = parent_popup
+        
 class InputPopup(Popup):
     caller = ObjectProperty(None)
 
@@ -53,6 +56,12 @@ class MutableSpinner(Spinner):
         if text == '<new>':
             popup = Factory.InputPopup(self)
             popup.open()
+            
+class DisplayDrinkPopup(Popup):
+    def __init__(self, name, details):
+        super(DisplayDrinkPopup, self).__init__()
+        self.title = name
+        self.details.text = details
 
 class NewDrinkPopup(Popup):
     def __init__(self, caller=None, **kwargs):
@@ -123,10 +132,9 @@ class HomeScreen(BoxLayout):
         self.drink_list.refresh_from_data()
 
     def show_drink(self, text):
-        popup = Factory.DisplayDrinkPopup()
         name = self.name_re.match(text).group(1)
         result = drinks.process_command(["show", name])
-        popup.details.text = result.getvalue()
+        popup = Factory.DisplayDrinkPopup(name, result.getvalue())
         popup.open()
 
     def input_new_drink(self):
@@ -151,6 +159,17 @@ class HomeScreen(BoxLayout):
             command = command + [ f"{step.text}" ]
         drinks.process_command(command)
         self._refresh()
+
+    def delete_drink_complete(self, confirm_popup, display_popup):
+        drinks.process_command([ "remove", display_popup.title ])
+        confirm_popup.dismiss()
+        display_popup.dismiss()
+        self._refresh()
+        
+    def delete_drink_confirm(self, name, display_popup):
+        popup = Factory.ConfirmDeletePopup(display_popup)
+        popup.title = f"Really delete drink {name}?"
+        popup.open()
         
     def choose_json_file(self):
         if platform == 'android':
