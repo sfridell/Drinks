@@ -44,6 +44,9 @@ def get_args(argv):
     parser_import = subparsers.add_parser('import')
     parser_import.add_argument('filename')
 
+    parser_export = subparsers.add_parser('export')
+    parser_export.add_argument('filename')
+    
     parser_spirits = subparsers.add_parser('spirits')
     parser_spirits_commands = parser_spirits.add_subparsers(dest='spirits_command')
     parser_spirits_list = parser_spirits_commands.add_parser('list')
@@ -85,6 +88,8 @@ def process_command(argv = sys.argv[1:]):
         db.remove_drink_by_name(args.name)
     elif args.command == 'import':
         db.import_drinks_from_file(args.filename)
+    elif args.command == 'export':
+        db.export_drinks_to_file(args.filename)
     elif args.command == 'spirits':
         if args.spirits_command == 'list':
             spirits = db.list_spirits()

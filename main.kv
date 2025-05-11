@@ -1,3 +1,12 @@
+<InfoPopup>
+    title: ""
+    size_hint : 0.9, 0.2
+
+    BoxLayout:
+        Button:
+            text: "OK"
+            on_release: root.dismiss()
+     
 <InputPopup>
     title: ""
     input_text: input_text
@@ -184,5 +193,11 @@
         size_hint: 0.4, 0.1
         pos_hint: {"x":0.3, "y":0.9}
         text: "refresh db"
-        on_release: root.choose_json_file()
+        on_release: root.choose_json_import_file()
+
+    Button:
+        size_hint: 0.4, 0.1
+        pos_hint: {"x":0.3, "y":0.9}
+        text: "export db"
+        on_release: root.export_to_json()
 

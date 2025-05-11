@@ -53,12 +53,16 @@ class DrinksDB:
         self._con.commit()
         
     def import_drinks_from_file(self, filename):
-        f = open(filename)
-        drinks = json.load(f)    
-        f.close()
+        with open(filename) as f:
+            drinks = json.load(f)    
         for d in drinks['drinks']:
             self.new_drink(d)
 
+    def export_drinks_to_file(self, filename):
+        output = { 'drinks' : self.find_drinks() }
+        with open(filename, "w") as f:
+            json.dump(output, f, indent=5)
+        
     def list_spirits(self):
         res = self._cur.execute(f"SELECT * FROM spirits")
         spirits = res.fetchall()

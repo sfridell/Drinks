@@ -19,14 +19,23 @@ from kivymd.uix.label import MDLabel
 
 import re
 import drinks
+import datetime
 from functools import partial
 from plyer import filechooser
+
 
 if platform == 'android':
     from androidstorage4kivy import SharedStorage
     from androidstorage4kivy import Chooser
+    from android import autoclass
+    Environment = autoclass('android.os.Environment')
 
 Builder.load_file('main.kv')
+
+class InfoPopup(Popup):
+    def __init__(self, message):
+        super(InfoPopup, self).__init__()
+        self.title = message
 
 class ConfirmDeletePopup(Popup):
     def __init__(self, parent_popup):
@@ -171,12 +180,12 @@ class HomeScreen(BoxLayout):
         popup.title = f"Really delete drink {name}?"
         popup.open()
         
-    def choose_json_file(self):
+    def choose_json_import_file(self):
         if platform == 'android':
             Chooser(self.import_from_json).choose_content()
         else:
             filechooser.open_file(on_selection=self.import_from_json)
-
+            
     def import_from_json(self, selection):        
         if platform == 'android':
             filename = SharedStorage().copy_from_shared(selection[0])
@@ -184,6 +193,15 @@ class HomeScreen(BoxLayout):
             filename = selection[0]
         result = drinks.process_command(["import", filename])
         self._refresh()
+
+    def export_to_json(self):
+        filename = "./drinksdb.backup-" + str(datetime.datetime.now()) + ".json"
+        drinks.process_command(["export", filename])
+        if platform == 'android':
+            uri = SharedStorage().copy_to_shared(filename, collection=Environment.DIRECTORY_DOWNLOADS)
+            print("copied file " + filename + " to URI: " + str(uri))
+        popup = Factory.InfoPopup("DB exported to file: " + filename)
+        popup.open()
         
 class DrinksApp(MDApp):
 
