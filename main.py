@@ -137,6 +137,7 @@ class HomeScreen(BoxLayout):
     def _refresh(self):
         result = drinks.process_command(['list'])
         lines = result.getvalue().splitlines()
+        lines = sorted(lines)
         self.drink_list.data = [{'text': line, 'on_press': partial(self.show_drink, line)} for line in lines]
         self.drink_list.refresh_from_data()
 
