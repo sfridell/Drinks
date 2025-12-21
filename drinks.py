@@ -38,6 +38,12 @@ def get_args(argv):
     parser_new.add_argument("--spirit", action="extend", nargs="+", type=str)
     parser_new.add_argument("--step", action="extend", nargs="+", type=str)
 
+    parser_new = subparsers.add_parser('edit')
+    parser_new.add_argument('name')
+    parser_new.add_argument("--mixer", action="extend", nargs="+", type=str)
+    parser_new.add_argument("--spirit", action="extend", nargs="+", type=str)
+    parser_new.add_argument("--step", action="extend", nargs="+", type=str)
+
     parser_new = subparsers.add_parser('remove')
     parser_new.add_argument('name')
 
@@ -74,6 +80,12 @@ def process_command(argv = sys.argv[1:]):
                       'spirits' : args.spirit,
                       'steps' : args.step }
         db.new_drink(new_drink)
+    elif args.command == 'edit':
+        new_drink = { 'name' : args.name,
+                      'mixers' : args.mixer,
+                      'spirits' : args.spirit,
+                      'steps' : args.step }
+        db.update_drink(new_drink)
     elif args.command == 'list':
         drinks = db.find_drinks(args.terms if args.terms else [])
         for d in drinks:

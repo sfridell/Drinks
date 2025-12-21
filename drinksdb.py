@@ -31,6 +31,29 @@ class DrinksDB:
             self._cur.execute(f"INSERT OR IGNORE INTO steps VALUES (\'{s}\')")
         self._cur.execute(f"INSERT OR IGNORE INTO drinks VALUES (null, \'{serialized_drink}\')")
         self._con.commit()
+
+    def update_drink(self, new_drink):
+        print(f'trying to update drink {new_drink["name"]}')
+        drink = self.get_drink_by_name(new_drink['name'])
+        if not drink:
+            print('Drink does not exist')
+            return
+        if new_drink["spirits"]:
+            drink["spirits"] = new_drink["spirits"]
+        if new_drink["mixers"]:
+            drink["mixers"] = new_drink["mixers"]
+        if new_drink["steps"]:
+            drink["steps"] = new_drink["steps"]
+        for s in drink["spirits"]:
+            self._cur.execute(f"INSERT OR IGNORE INTO spirits VALUES (\'{self._name_from_namespec(s)}\')")
+        for m in drink["mixers"]:
+            self._cur.execute(f"INSERT OR IGNORE INTO mixers VALUES (\'{self._name_from_namespec(m)}\')")
+        for s in drink["steps"]:
+            self._cur.execute(f"INSERT OR IGNORE INTO steps VALUES (\'{s}\')")
+        self.remove_drink_by_name(drink["name"])
+        serialized_drink = json.dumps(drink)
+        self._cur.execute(f"INSERT OR IGNORE INTO drinks VALUES (null, \'{serialized_drink}\')")
+        self._con.commit()
         
     def find_drinks(self, terms=[]):
         where_clause = 'WHERE TRUE'
