@@ -12,6 +12,12 @@ class DrinksDB:
         self._cur.execute("CREATE TABLE IF NOT EXISTS spirits(spirit TEXT PRIMARY KEY)")
         self._cur.execute("CREATE TABLE IF NOT EXISTS mixers(mixer TEXT PRIMARY KEY)")
         self._cur.execute("CREATE TABLE IF NOT EXISTS steps(step TEXT PRIMARY KEY)")
+        self._cur.execute("CREATE TABLE IF NOT EXISTS glasses(glass TEXT PRIMARY KEY)")
+        query = "INSERT OR IGNORE INTO glasses (glass) VALUES (?)"
+        self._cur.execute(query, ('coupe',))
+        self._cur.execute(query, ('rocks',))
+        self._cur.execute(query, ('wine',))
+        self._con.commit()
         
     def _name_from_namespec(self, namespec):
         return namespec[0:namespec.index(':')]
@@ -21,6 +27,8 @@ class DrinksDB:
         if self.get_drink_by_name(drink['name']):
             print('Drink exists')
             return
+        if not "glass" in drink:
+            drink["glass"] = 'coupe'
         serialized_drink = json.dumps(drink)
         print('serialized drink: %s' % serialized_drink)
         for s in drink["spirits"]:
@@ -29,6 +37,10 @@ class DrinksDB:
             self._cur.execute(f"INSERT OR IGNORE INTO mixers VALUES (\'{self._name_from_namespec(m)}\')")
         for s in drink["steps"]:
             self._cur.execute(f"INSERT OR IGNORE INTO steps VALUES (\'{s}\')")
+        res = self._cur.execute(f"SELECT * FROM glasses WHERE glass = \'{drink['glass']}\'")
+        row = res.fetchall()
+        if not row:
+            raise Exception('No such glass')
         self._cur.execute(f"INSERT OR IGNORE INTO drinks VALUES (null, \'{serialized_drink}\')")
         self._con.commit()
 
@@ -44,12 +56,20 @@ class DrinksDB:
             drink["mixers"] = new_drink["mixers"]
         if new_drink["steps"]:
             drink["steps"] = new_drink["steps"]
+        if new_drink["glass"]:
+            drink["glass"] = new_drink["glass"]
+        if not "glass" in drink:
+            drink["glass"] = 'coupe'
         for s in drink["spirits"]:
             self._cur.execute(f"INSERT OR IGNORE INTO spirits VALUES (\'{self._name_from_namespec(s)}\')")
         for m in drink["mixers"]:
             self._cur.execute(f"INSERT OR IGNORE INTO mixers VALUES (\'{self._name_from_namespec(m)}\')")
         for s in drink["steps"]:
             self._cur.execute(f"INSERT OR IGNORE INTO steps VALUES (\'{s}\')")
+        res = self._cur.execute(f"SELECT * FROM glasses WHERE glass = \"{drink['glass']}\"")
+        row = res.fetchall()
+        if not row:
+            raise Exception('No such glass')
         self.remove_drink_by_name(drink["name"])
         serialized_drink = json.dumps(drink)
         self._cur.execute(f"INSERT OR IGNORE INTO drinks VALUES (null, \'{serialized_drink}\')")
@@ -100,4 +120,9 @@ class DrinksDB:
         res = self._cur.execute(f"SELECT * FROM steps")
         steps = res.fetchall()
         return [ s[0] for s in steps ]
+
+    def list_glasses(self):
+        res = self._cur.execute(f"SELECT * FROM glasses")
+        glasses = res.fetchall()
+        return [ g[0] for g in glasses ]
 

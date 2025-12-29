@@ -8,6 +8,9 @@ import io
 
 def show_drink(output, drink):
     print(f"-----{drink['name']}----", file=output)
+    if 'glass' in drink:
+        print("Glass:", file=output)
+        print(drink['glass'], file=output)
     print("Ingredients:", file=output)
     for m in drink['mixers']:
         print(m, file=output)
@@ -18,7 +21,7 @@ def show_drink(output, drink):
     for s in drink['steps']:
         print(f'{step_num}. {s}', file=output)
         step_num += 1
-
+    
 def show_drink_summary(output, drink):
     print(f"Name: {drink['name']} Spirits({len(drink['spirits'])}) Mixers({len(drink['mixers'])})", file=output)
 
@@ -37,13 +40,15 @@ def get_args(argv):
     parser_new.add_argument("--mixer", action="extend", nargs="+", type=str)
     parser_new.add_argument("--spirit", action="extend", nargs="+", type=str)
     parser_new.add_argument("--step", action="extend", nargs="+", type=str)
+    parser_new.add_argument("--glass", type=str)
 
     parser_new = subparsers.add_parser('edit')
     parser_new.add_argument('name')
     parser_new.add_argument("--mixer", action="extend", nargs="+", type=str)
     parser_new.add_argument("--spirit", action="extend", nargs="+", type=str)
     parser_new.add_argument("--step", action="extend", nargs="+", type=str)
-
+    parser_new.add_argument("--glass", type=str)
+    
     parser_new = subparsers.add_parser('remove')
     parser_new.add_argument('name')
 
@@ -65,6 +70,10 @@ def get_args(argv):
     parser_steps_commands = parser_steps.add_subparsers(dest='steps_command')
     parser_steps_list = parser_steps_commands.add_parser('list')
 
+    parser_glasses = subparsers.add_parser('glasses')
+    parser_glasses_commands = parser_glasses.add_subparsers(dest='glasses_command')
+    parser_glasses_list = parser_glasses_commands.add_parser('list')
+
     return parser.parse_args(argv)
 
 
@@ -78,13 +87,15 @@ def process_command(argv = sys.argv[1:]):
         new_drink = { 'name' : args.name,
                       'mixers' : args.mixer,
                       'spirits' : args.spirit,
-                      'steps' : args.step }
+                      'steps' : args.step,
+                      'glass' : args.glass }
         db.new_drink(new_drink)
     elif args.command == 'edit':
         new_drink = { 'name' : args.name,
                       'mixers' : args.mixer,
                       'spirits' : args.spirit,
-                      'steps' : args.step }
+                      'steps' : args.step,
+                      'glass' : args.glass }
         db.update_drink(new_drink)
     elif args.command == 'list':
         drinks = db.find_drinks(args.terms if args.terms else [])
@@ -117,6 +128,11 @@ def process_command(argv = sys.argv[1:]):
             steps = db.list_steps()
             for s in steps:
                 print(s, file=output)
+    elif args.command == 'glasses':
+        if args.glasses_command == 'list':
+            glasses = db.list_glasses()
+            for g in glasses:
+                print(g, file=output)
                 
     return output
 
