@@ -19,9 +19,12 @@ class DrinksDB:
         self._cur.execute(query, ('wine',))
         self._con.commit()
         
-    def _name_from_namespec(self, namespec):
+    def name_from_namespec(self, namespec):
         return namespec[0:namespec.index(':')]
-        
+
+    def amount_from_namespec(self, namespec):
+        return float(namespec[namespec.index(':')+1:])
+    
     def new_drink(self, drink):
         print(f'trying to add drink {drink["name"]}')
         if self.get_drink_by_name(drink['name']):
@@ -32,9 +35,9 @@ class DrinksDB:
         serialized_drink = json.dumps(drink)
         print('serialized drink: %s' % serialized_drink)
         for s in drink["spirits"]:
-            self._cur.execute(f"INSERT OR IGNORE INTO spirits VALUES (\'{self._name_from_namespec(s)}\')")
+            self._cur.execute(f"INSERT OR IGNORE INTO spirits VALUES (\'{self.name_from_namespec(s)}\')")
         for m in drink["mixers"]:
-            self._cur.execute(f"INSERT OR IGNORE INTO mixers VALUES (\'{self._name_from_namespec(m)}\')")
+            self._cur.execute(f"INSERT OR IGNORE INTO mixers VALUES (\'{self.name_from_namespec(m)}\')")
         for s in drink["steps"]:
             self._cur.execute(f"INSERT OR IGNORE INTO steps VALUES (\'{s}\')")
         res = self._cur.execute(f"SELECT * FROM glasses WHERE glass = \'{drink['glass']}\'")
@@ -61,9 +64,9 @@ class DrinksDB:
         if not "glass" in drink:
             drink["glass"] = 'coupe'
         for s in drink["spirits"]:
-            self._cur.execute(f"INSERT OR IGNORE INTO spirits VALUES (\'{self._name_from_namespec(s)}\')")
+            self._cur.execute(f"INSERT OR IGNORE INTO spirits VALUES (\'{self.name_from_namespec(s)}\')")
         for m in drink["mixers"]:
-            self._cur.execute(f"INSERT OR IGNORE INTO mixers VALUES (\'{self._name_from_namespec(m)}\')")
+            self._cur.execute(f"INSERT OR IGNORE INTO mixers VALUES (\'{self.name_from_namespec(m)}\')")
         for s in drink["steps"]:
             self._cur.execute(f"INSERT OR IGNORE INTO steps VALUES (\'{s}\')")
         res = self._cur.execute(f"SELECT * FROM glasses WHERE glass = \"{drink['glass']}\"")

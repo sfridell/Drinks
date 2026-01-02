@@ -5,22 +5,53 @@ import drinksdb
 import argparse
 import sys
 import io
+import json
 
-def show_drink(output, drink):
-    print(f"-----{drink['name']}----", file=output)
-    if 'glass' in drink:
-        print("Glass:", file=output)
-        print(drink['glass'], file=output)
-    print("Ingredients:", file=output)
-    for m in drink['mixers']:
-        print(m, file=output)
-    for s in drink['spirits']:
-        print(s, file=output)
-    print('Instructions:', file=output)
-    step_num = 1
-    for s in drink['steps']:
-        print(f'{step_num}. {s}', file=output)
-        step_num += 1
+def show_drink(output, db, drink, use_json, no_headers, fields):
+    if use_json:
+        json_drink = json.dumps(drink)
+        print(json_drink, file=output)
+    else:
+        header = ""
+        if not fields:
+            fields = ['name', 'glass', 'ingredients', 'instructions']
+        if 'name' in fields:
+            if not no_headers:
+                header = "Name:  "
+            print(f"{header}{drink['name']}", file=output)
+        if 'glass' in drink and 'glass' in fields:
+            if not no_headers:
+                header = "Glass:  "
+            print(f"{header}{drink['glass']}", file=output)
+        if 'ingredients' in fields:
+            if not no_headers:
+                print("Ingredients:", file=output)
+                header = "  "
+            for m in drink['mixers']:
+                print(f"{header}{m}", file=output)
+            for s in drink['spirits']:
+                print(f"{header}{s}", file=output)
+        if 'instructions' in fields:
+            if not no_headers:
+                print('Instructions:', file=output)
+                header = "  "
+            step_num = 1
+            for s in drink['steps']:
+                print(f'{header}{step_num}. {s}', file=output)
+                step_num += 1
+        if 'volume' in fields:
+            if not no_headers:
+                header = "Volume:  "
+            volume = 0.0
+            for m in drink['mixers']:
+                v = db.amount_from_namespec(m)
+                if v > 0.1:
+                    volume = volume + v
+            for s in drink['spirits']:
+                v = db.amount_from_namespec(s)
+                if v > 0.1:
+                    volume = volume + v
+            print(f"{header}{volume}", file=output)
     
 def show_drink_summary(output, drink):
     print(f"Name: {drink['name']} Spirits({len(drink['spirits'])}) Mixers({len(drink['mixers'])})", file=output)
@@ -34,6 +65,9 @@ def get_args(argv):
     
     parser_show = subparsers.add_parser('show')
     parser_show.add_argument('name')
+    parser_show.add_argument("--json", action="store_true")
+    parser_show.add_argument("--no_headers", action="store_true")
+    parser_show.add_argument("--fields", action="extend", nargs="+", type=str)
     
     parser_new = subparsers.add_parser('new')
     parser_new.add_argument('name')
@@ -106,7 +140,7 @@ def process_command(argv = sys.argv[1:]):
         if not drink:
             print('Not found.', file=output)
         else:
-            show_drink(output, drink)
+            show_drink(output, db, drink, args.json, args.no_headers, args.fields)
     elif args.command == 'remove':
         db.remove_drink_by_name(args.name)
     elif args.command == 'import':
