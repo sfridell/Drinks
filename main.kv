@@ -240,42 +240,18 @@
 
     BoxLayout:
         size_hint_y: None
-        height: "40dp"
- 
-        MDTextField:
-            id: filter_input
-            mode: 'rectangle'
-            hint_text: "enter keywords"
-            multiline: False
-            on_text_validate: root.run_filter()
-            icon_left: 'magnify'
-            theme_cls: app.theme_cls
-            line_color_normal: [0.7, 0.7, 0.7, 1]
-            line_color_focus: [1, 1, 1, 1]
-            hint_text_color_normal: [0.7, 0.7, 0.7, 1]
-            hint_text_color_focus: [1, 1, 1, 1]
-            text_color_normal: [1, 1, 1, 1]
-            text_color_focus: [1, 1, 1, 1]
-            fill_color_normal: [0.15, 0.15, 0.15, 0.5]
-            fill_color_focus: [0.2, 0.2, 0.2, 0.7]
-            icon_left_color: [1, 1, 1, 1]
-	    
-    RecycleView:
-        id: drink_list_view
-        size_hint_y: 9
-        viewclass: 'DrinkButton'
-        RecycleBoxLayout:
-            default_size: None, dp(57)
-            default_size_hint: 1, None
-            size_hint_y: None
-            height: self.minimum_height
-            orientation: 'vertical'
-            spacing: 0
-
-    BoxLayout:
+        height: "50dp"
         orientation: 'horizontal'
-        size_hint_y: 1
-
+        
+        MDLabel:
+            text: "Drink It!"
+            font_style: "H5"
+            theme_text_color: "Custom"
+            text_color: [1, 1, 1, 1]
+            size_hint_x: 1
+            valign: 'middle'
+            padding_x: 10
+        
         TooltipMDIconButton:
             icon: "plus"
             tooltip_text: "new drink"
@@ -296,4 +272,39 @@
             theme_icon_color: "Custom"
             icon_color: [1, 1, 1, 1]
             on_release: root.export_to_json()
+
+    RecycleView:
+        id: drink_list_view
+        size_hint_y: 1
+        viewclass: 'DrinkButton'
+        RecycleBoxLayout:
+            default_size: None, dp(57)
+            default_size_hint: 1, None
+            size_hint_y: None
+            height: self.minimum_height
+            orientation: 'vertical'
+            spacing: 0
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+ 
+        MDTextField:
+            id: filter_input
+            mode: 'rectangle'
+            hint_text: "enter keywords"
+            multiline: False
+            on_text_validate: root.run_filter()
+            icon_left: 'magnify'
+            theme_cls: app.theme_cls
+            line_color_normal: [0.7, 0.7, 0.7, 1]
+            line_color_focus: [1, 1, 1, 1]
+            hint_text_color_normal: [0.7, 0.7, 0.7, 1]
+            hint_text_color_focus: [1, 1, 1, 1]
+            text_color_normal: [1, 1, 1, 1]
+            text_color_focus: [1, 1, 1, 1]
+            fill_color_normal: [0.15, 0.15, 0.15, 0.5]
+            fill_color_focus: [0.2, 0.2, 0.2, 0.7]
+            icon_left_color: [1, 1, 1, 1]
+	    
 
