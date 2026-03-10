@@ -17,6 +17,7 @@ class DrinksDB:
         self._cur.execute(query, ('coupe',))
         self._cur.execute(query, ('rocks',))
         self._cur.execute(query, ('wine',))
+        self._cur.execute(query, ('hiball',))
         self._con.commit()
         
     def name_from_namespec(self, namespec):
