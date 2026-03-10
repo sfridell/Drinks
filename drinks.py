@@ -54,7 +54,7 @@ def show_drink(output, db, drink, use_json, no_headers, fields):
             print(f"{header}{volume}", file=output)
     
 def show_drink_summary(output, drink):
-    print(f"Name: {drink['name']} Spirits({len(drink['spirits'])}) Mixers({len(drink['mixers'])})", file=output)
+    print(f"{drink['name']}\t({len(drink['spirits'])})Spirits\t({len(drink['mixers'])})Mixers", file=output)
 
 def get_args(argv):
     parser = argparse.ArgumentParser()
