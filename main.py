@@ -9,9 +9,12 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.recycleview import RecycleView
 from kivy.uix.popup import Popup
 from kivy.uix.spinner import Spinner
+from kivy.uix.image import Image, CoreImage
 from kivy.factory import Factory
 from kivy.utils import platform
-
+from kivy.graphics.svg import Svg
+from kivy.graphics import PushMatrix, PopMatrix, Scale, Translate
+from kivy.properties import StringProperty
 from kivymd.app import MDApp
 from kivymd.uix.button import MDTextButton
 from kivymd.uix.textfield import MDTextField
@@ -20,6 +23,7 @@ from kivymd.uix.label import MDLabel
 import re
 import drinks
 import datetime
+import json
 from functools import partial
 from plyer import filechooser
 
@@ -30,7 +34,31 @@ if platform == 'android':
     from android import autoclass
     Environment = autoclass('android.os.Environment')
 
+class SvgWidget(BoxLayout):
+    source = StringProperty('')
+    
+    def __init__(self, **kwargs):
+        super(SvgWidget, self).__init__(**kwargs)
+        self.bind(source=self.reload_svg, size=self.reload_svg, pos=self.reload_svg)
+        
+    def reload_svg(self, *args):
+        self.canvas.after.clear()
+        if self.source:
+            svg = Svg(self.source)
+            scale = min(self.width / svg.width, self.height / svg.height) if svg.width and svg.height else 1
+            with self.canvas.after:
+                PushMatrix()
+                Scale(scale, scale, 1)
+                Translate(self.x / scale, self.y / scale)
+                Svg(self.source)
+                PopMatrix()
+
 Builder.load_file('main.kv')
+def name_from_namespec(namespec):
+    return namespec[0:namespec.index(':')]
+
+def amount_from_namespec(namespec):
+    return float(namespec[namespec.index(':')+1:])
 
 class InfoPopup(Popup):
     def __init__(self, message):
@@ -67,18 +95,45 @@ class MutableSpinner(Spinner):
             popup.open()
             
 class DisplayDrinkPopup(Popup):
-    def __init__(self, name, details):
+    def __init__(self, name, glass, volume, details):
         super(DisplayDrinkPopup, self).__init__()
-        self.title = name
+        self.title = name.upper()
+        self.name = name
+        self.glass.source = f"./images/{glass}-glass.svg"
+        self.ounces.text = f"{volume}oz"
         self.details.text = details
 
 class NewDrinkPopup(Popup):
-    def __init__(self, caller=None, **kwargs):
+    def __init__(self, caller=None, edit_drink=None, **kwargs):
         super(NewDrinkPopup, self).__init__()
+        self.edit = False
         self.spirits = []
         self.mixers = []
         self.steps = []
         self.caller = caller
+        selector = self.ids.glass_input
+        result = drinks.process_command(['glasses', 'list'])
+        lines = result.getvalue().splitlines()
+        selector.text = lines[0]
+        selector.values = lines
+        if edit_drink:
+            self.edit = True
+            self._populate_drink(edit_drink)
+
+    def _populate_drink(self, drink):
+        self.ids.name_input.text = drink["name"]
+        for s in drink["spirits"]:
+            self.add_spirit_selector()
+            self.spirits[-1].ids.ingredient_input.text = name_from_namespec(s)
+            self.spirits[-1].ids.amount_input.text = f'{amount_from_namespec(s)}oz'
+        for m in drink["mixers"]:
+            self.add_mixer_selector()
+            self.mixers[-1].ids.ingredient_input.text = name_from_namespec(m)
+            self.mixers[-1].ids.amount_input.text = f'{amount_from_namespec(m)}oz'
+        for s in drink["steps"]:
+            self.add_steps_selector()
+            self.steps[-1].text = s
+        self.ids.glass_input.text = drink["glass"]
 
     def add_spirit_selector(self):
         layout = self.ids.spirit_select
@@ -102,11 +157,14 @@ class NewDrinkPopup(Popup):
         layout.add_widget(self.steps[-1])
 
     def save_drink(self):
-        self.caller.save_new_drink(self.ids.name_input.text,
-                                   self.mixers,
-                                   self.spirits,
-                                   self.steps)
+        self.caller.save_drink(self.edit,
+                               self.ids.name_input.text,
+                               self.mixers,
+                               self.spirits,
+                               self.steps,
+                               self.ids.glass_input.text)
         self.dismiss()
+        self.caller.show_drink(f"Name: {self.ids.name_input.text} Spirits")
         
 class IngredientSelectPair(BoxLayout):
     selection_type = ObjectProperty()
@@ -131,28 +189,42 @@ class HomeScreen(BoxLayout):
         filter_args = self.filter.text.split()
         result = drinks.process_command(["list", "--terms"] + filter_args)
         lines = result.getvalue().splitlines()
+        lines = [ l.split('\t')[0] for l in lines ]
+        lines = sorted(lines)
         self.drink_list.data = [{'text': line, 'on_press': partial(self.show_drink, line)} for line in lines]
         self.drink_list.refresh_from_data()
 
     def _refresh(self):
         result = drinks.process_command(['list'])
         lines = result.getvalue().splitlines()
+        lines = [ l.split('\t')[0] for l in lines ]
         lines = sorted(lines)
-        self.drink_list.data = [{'text': line, 'on_press': partial(self.show_drink, line)} for line in lines]
+        self.drink_list.data = [{'text': line, 'on_press': partial(self.show_drink, line), } for line in lines]
         self.drink_list.refresh_from_data()
 
     def show_drink(self, text):
-        name = self.name_re.match(text).group(1)
-        result = drinks.process_command(["show", name])
-        popup = Factory.DisplayDrinkPopup(name, result.getvalue())
+        name = text
+        glass = drinks.process_command(["show", name, "--no_headers", "--fields", "glass"]).getvalue().rstrip()
+        volume = drinks.process_command(["show", name, "--no_headers", "--fields", "volume"]).getvalue().rstrip()
+        details = drinks.process_command(["show", name, "--fields", "ingredients", "instructions"]).getvalue().rstrip()
+        popup = Factory.DisplayDrinkPopup(name, glass, volume, details)
         popup.open()
 
     def input_new_drink(self):
         popup = Factory.NewDrinkPopup(caller=self)
         popup.open()
 
-    def save_new_drink(self, name, mixers, spirits, steps):
-        command = [ "new" ]
+    def edit_drink(self, name, drink_popup):
+        drink = json.loads(drinks.process_command(["show", name, "--json"]).getvalue())
+        popup = Factory.NewDrinkPopup(caller=self, edit_drink=drink)
+        popup.open()
+        drink_popup.dismiss()
+        
+    def save_drink(self, edit, name, mixers, spirits, steps, glass):
+        if edit:
+            command = ['edit']
+        else:
+            command = [ "new" ]
         # name
         command = command + [ name ]
         # get mixers
@@ -167,6 +239,8 @@ class HomeScreen(BoxLayout):
         command = command + [ "--step" ]
         for step in steps:
             command = command + [ f"{step.text}" ]
+        # get glass
+        command = command + [ "--glass", glass ]
         drinks.process_command(command)
         self._refresh()
 
