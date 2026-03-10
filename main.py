@@ -53,6 +53,10 @@ class SvgWidget(BoxLayout):
                 Svg(self.source)
                 PopMatrix()
 
+class DrinkButton(BoxLayout):
+    drink_text = StringProperty('')
+    callback = ObjectProperty(None)
+
 Builder.load_file('main.kv')
 def name_from_namespec(namespec):
     return namespec[0:namespec.index(':')]
@@ -191,7 +195,7 @@ class HomeScreen(BoxLayout):
         lines = result.getvalue().splitlines()
         lines = [ l.split('\t')[0] for l in lines ]
         lines = sorted(lines)
-        self.drink_list.data = [{'text': line, 'on_press': partial(self.show_drink, line)} for line in lines]
+        self.drink_list.data = [{'drink_text': line, 'callback': partial(self.show_drink, line)} for line in lines]
         self.drink_list.refresh_from_data()
 
     def _refresh(self):
@@ -199,7 +203,7 @@ class HomeScreen(BoxLayout):
         lines = result.getvalue().splitlines()
         lines = [ l.split('\t')[0] for l in lines ]
         lines = sorted(lines)
-        self.drink_list.data = [{'text': line, 'on_press': partial(self.show_drink, line), } for line in lines]
+        self.drink_list.data = [{'drink_text': line, 'callback': partial(self.show_drink, line)} for line in lines]
         self.drink_list.refresh_from_data()
 
     def show_drink(self, text):
