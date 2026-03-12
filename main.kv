@@ -30,16 +30,23 @@
 <InfoPopup>
     title: ""
     size_hint : 0.9, 0.2
+    background_color: [0.2, 0.2, 0.2, 1]
+    background: ''
 
     BoxLayout:
         Button:
             text: "OK"
+            background_color: [0.15, 0.15, 0.15, 1]
+            background_normal: ''
+            color: [1, 1, 1, 1]
             on_release: root.dismiss()
      
 <InputPopup>
     title: ""
     input_text: input_text
     size_hint : 0.9, 0.2
+    background_color: [0.2, 0.2, 0.2, 1]
+    background: ''
 
     BoxLayout:
         orientation: "vertical"
@@ -49,13 +56,20 @@
             id: input_text
             multiline: False
             hint_text: "enter text"
+            background_color: [0.15, 0.15, 0.15, 1]
+            foreground_color: [1, 1, 1, 1]
         Button:
             text: "close"
+            background_color: [0.15, 0.15, 0.15, 1]
+            background_normal: ''
+            color: [1, 1, 1, 1]
             on_release: root.save_input()
 
 <ConfirmDeletePopup>
     title: ""
     size_hint : 0.9, 0.2
+    background_color: [0.2, 0.2, 0.2, 1]
+    background: ''
 
     BoxLayout:
         orientation: "vertical"
@@ -63,9 +77,15 @@
 
         Button:
             text: "Cancel"
+            background_color: [0.15, 0.15, 0.15, 1]
+            background_normal: ''
+            color: [1, 1, 1, 1]
             on_release: root.dismiss()
         Button:
             text: "OK"
+            background_color: [0.15, 0.15, 0.15, 1]
+            background_normal: ''
+            color: [1, 1, 1, 1]
             on_release: app.root.delete_drink_complete(root, root.parent_popup)
 
 <IngredientSelectPair>
@@ -76,8 +96,12 @@
         id: amount_input
         text: "1.0oz"
         values: [ "0.1oz", "0.25oz", "0.5oz", "0.75oz", "1.0oz", "1.25oz", "1.5oz", "2.0oz" ]
+        background_color: [0.15, 0.15, 0.15, 1]
+        color: [1, 1, 1, 1]
     MutableSpinner:
         id: ingredient_input
+        background_color: [0.15, 0.15, 0.15, 1]
+        color: [1, 1, 1, 1]
 	
 <NewDrinkPopup>
     title: "Add or update a drink"
@@ -85,16 +109,40 @@
     auto_dismiss: False
     size_hint: 0.8, 0.8
     pos_hint: {"x":0.1, "y":0.1}
+    background_color: [0.2, 0.2, 0.2, 1]
+    background: ''
+    
+    canvas.after:
+        Color:
+            rgba: [1, 1, 1, 1]
+        Line:
+            rectangle: self.x, self.y, self.width, self.height
+            width: 1
 
     BoxLayout:
         orientation: "vertical"
         size: root.width, root.height
+        
+        canvas.before:
+            Color:
+                rgba: [0.2, 0.2, 0.2, 1]
+            Rectangle:
+                pos: self.pos
+                size: self.size
 
         MDTextField:
             id: name_input
-            mode: "fill"
+            mode: "rectangle"
             hint_text: "Drink name"
             max_text_length: 30
+            line_color_normal: [0.7, 0.7, 0.7, 1]
+            line_color_focus: [1, 1, 1, 1]
+            hint_text_color_normal: [0.7, 0.7, 0.7, 1]
+            hint_text_color_focus: [1, 1, 1, 1]
+            text_color_normal: [1, 1, 1, 1]
+            text_color_focus: [1, 1, 1, 1]
+            fill_color_normal: [0.15, 0.15, 0.15, 0.5]
+            fill_color_focus: [0.2, 0.2, 0.2, 0.7]
 
         BoxLayout:
             id: spirit_select
@@ -153,15 +201,25 @@
                 text: "enter glass"
             MutableSpinner:
                 id: glass_input
+                background_color: [0.15, 0.15, 0.15, 1]
+                color: [1, 1, 1, 1]
 
-        Button:
-            text: "cancel"
-            size_hint: 1.0, 0.3
-            on_release: root.dismiss()
-        Button:
-            text: "ok"
-            size_hint: 1.0, 0.3
-            on_release: root.save_drink()
+        BoxLayout:
+            orientation: "horizontal"
+
+            TooltipMDIconButton:
+                icon: "check"
+                tooltip_text: "save drink to db"
+                theme_icon_color: "Custom"
+                icon_color: [1, 1, 1, 1]
+                on_release: root.save_drink()
+
+            TooltipMDIconButton:
+                icon: "close"
+                tooltip_text: "cancel"
+                theme_icon_color: "Custom"
+                icon_color: [1, 1, 1, 1]
+                on_release: root.dismiss()
 
 
 <DisplayDrinkPopup>
