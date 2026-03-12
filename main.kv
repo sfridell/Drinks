@@ -168,7 +168,7 @@
     title: ""
     title_font: "./fonts/PhosphateInline.ttf"
     title_size: "40sp"
-    title_color: [0,0,0,1]
+    title_color: [1, 1, 1, 1]
     separator_height: 0
     auto_dismiss: False
     size_hint: 0.8, 0.8
@@ -176,28 +176,50 @@
     details: drink_details
     ounces: drink_ounces
     glass: drink_glass
-    background_color: [3,3,3,1]
+    background_color: [0.2, 0.2, 0.2, 1]
+    background: ''
+    
+    canvas.after:
+        Color:
+            rgba: [1, 1, 1, 1]
+        Line:
+            rectangle: self.x, self.y, self.width, self.height
+            width: 1
 
     BoxLayout:
         orientation: "vertical"
         size: root.width, root.height
 
+        canvas.before:
+            Color:
+                rgba: [0.2, 0.2, 0.2, 1]
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
         BoxLayout:
             orientation: "horizontal"
+            spacing: 50
 
             Label:
                 id: drink_ounces
+                size_hint_x: None
                 font_size: '40sp'
-                color: [0,0,0,1]
+                color: [1, 1, 1, 1]
                 text: ""
                 
             SvgWidget:
                 id: drink_glass
+                size_hint_x: None
                 source: "./images/coupe-glass.svg"
+
+            Widget:
+                size_hint_x: 1
+                
             
         Label:
             id: drink_details
-            color: [0,0,0,1]
+            color: [1, 1, 1, 1]
             text_size: self.size
             halign: "left"
             text: ""
@@ -208,19 +230,19 @@
             MDIconButton:
                 icon: "pencil"
                 theme_icon_color: "Custom"
-                icon_color: "black"
+                icon_color: [1, 1, 1, 1]
                 on_release: app.root.edit_drink(root.name, root)
 
             MDIconButton:
                 icon: "delete"
                 theme_icon_color: "Custom"
-                icon_color: "black"
+                icon_color: [1, 1, 1, 1]
                 on_release: app.root.delete_drink_confirm(root.name, root)
 
             MDIconButton:
                 icon: "arrow-left"
                 theme_icon_color: "Custom"
-                icon_color: "black"
+                icon_color: [1, 1, 1, 1]
                 on_release: root.dismiss()
 
 <HomeScreen>:
