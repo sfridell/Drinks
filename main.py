@@ -168,7 +168,7 @@ class NewDrinkPopup(Popup):
                                self.steps,
                                self.ids.glass_input.text)
         self.dismiss()
-        self.caller.show_drink(f"Name: {self.ids.name_input.text} Spirits")
+        self.caller.show_drink(self.ids.name_input.text)
         
 class IngredientSelectPair(BoxLayout):
     selection_type = ObjectProperty()
