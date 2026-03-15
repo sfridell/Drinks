@@ -225,7 +225,7 @@
 <DisplayDrinkPopup>
     title: ""
     title_font: "./fonts/PhosphateInline.ttf"
-    title_size: "40sp"
+    title_size: "30sp"
     title_color: [1, 1, 1, 1]
     separator_height: 0
     auto_dismiss: False
@@ -257,33 +257,35 @@
 
         BoxLayout:
             orientation: "horizontal"
-            spacing: 50
-
+	    
             Label:
                 id: drink_ounces
-                size_hint_x: None
-                font_size: '40sp'
+                size_hint_x: 0.5
+                font_size: '30sp'
                 color: [1, 1, 1, 1]
                 text: ""
                 
             SvgWidget:
                 id: drink_glass
-                size_hint_x: None
+                size_hint_x: 0.5
                 source: "./images/coupe-glass.svg"
-
-            Widget:
-                size_hint_x: 1
                 
+        ScrollView:
+            size_hint_y: 1
             
-        Label:
-            id: drink_details
-            color: [1, 1, 1, 1]
-            text_size: self.size
-            halign: "left"
-            text: ""
+            Label:
+                id: drink_details
+                color: [1, 1, 1, 1]
+                text_size: self.width, None
+                size_hint_y: None
+                height: self.texture_size[1] if self.texture_size else 0
+                halign: "left"
+                text: ""
 
         BoxLayout:
             orientation: "horizontal"
+            size_hint_y: None
+            height: '48dp'
 
             MDIconButton:
                 icon: "pencil"
