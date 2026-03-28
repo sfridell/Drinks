@@ -1,112 +1,516 @@
 {
-    "drinks" : [
-	{
-	    "name" : "Lions Tail",
-	    "mixers" : ["simple:0.5", "lime:0.5"],
-	    "spirits" : ["bourbon:2.0", "allspice dram:0.5", "angostura:0.1"],
-	    "steps" : ["shake w ice", "pour in coupe", "top w bitters"]
-	},
-	{
-	    "name" : "Gold Rush",
-	    "mixers" : ["honey syrup:0.75", "lime:0.75"],
-	    "spirits" : ["bourbon:2.0"],
-	    "steps" : ["shake w ice", "pour in rocks gloass over ice"]
-	},
-	{
-	    "name" : "Brown Derby",
-	    "mixers" : ["grapefruit:1.0", "honey syrup:0.5"],
-	    "spirits" : ["bourbon:1.5"],
-	    "steps" : ["shake w ice", "pour in coupe"]
-	},
-	{
-	    "name" : "Fitzgerald",
-	    "mixers" : ["lemon:0.75", "simple:0.75"],
-	    "spirits" : ["gin:2.0", "angostura:0.1"],
-	    "steps" : ["shake w ice", "pour in coupe", "top w bitters"]
-	},
-	{
-	    "name" : "Bello",
-	    "mixers" : ["lime:0.5"],
-	    "spirits" : ["gin:2.0", "lillet blanc:1", "st germain:0.5", "orange bitters:0.1"],
-	    "steps" : ["shake w ice", "pour in rocks glass over ice", "top w bitters"]
-	},
-	{
-	    "name" : "Stay Up Late",
-	    "mixers" : ["lime:0.5", "simple:0.5"],
-	    "spirits" : ["gin:1.5", "cognac:0.5"],
-	    "steps" : ["shake w ice", "pour in coupe"]
-	},
-	{
-	    "name" : "Old Fashioned",
-	    "mixers" : ["oragnge peel:1.0", "maraschino cherry:1.0", "simple:0.5"],
-	    "spirits" : ["bourbon:2.0", "angostura:0.1"],
-	    "steps" : ["stir in rocks glass with ice", "add bitters", "top with cherry"]
-	},
-	{
-	    "name" : "Margarita",
-	    "mixers": ["lime:0.75"],
-	    "spirits" : ["tequila:2.0", "Curacao:0.75"],
-	    "steps" : ["shake w ice", "pour over ice in rocks glass"]
-	},
-	{
-	    "name" : "Ginger Margarita",
-	    "mixers": ["lime:2.0"],
-	    "spirits": ["Domaine de Canton:2.0", "tequila:2.0"],
-	    "steps": ["shake w ice", "pour over ice in rocks glass"]
-	},
-	{
-	    "name": "Devils margarita",
-	    "spirits": ["blanco tequila:1.5", "red wine:0.5"],
-	    "mixers": ["lime:1.0", "simple:0.75"],
-	    "steps": ["shake all but wine", "strain into coupe", "float wine on top"]
-	},
-	{
-	    "name": "Pomegranate margarita",
-	    "spirits": ["tequila:2.0"],
-	    "mixers": ["pomegranate juice:1.0", "lime:0.75", "agave nectar:0.5"],
-	    "steps": ["shake w ice", "pour over ice into rocks glass"]
-	},
-	{
-	    "name": "The Gay Blade",
-	    "spirits": ["blanco tequila:1.0", "red wine:2.0"],
-	    "mixers": ["lime:0.5", "agave:0.25", "grapefruit soda:2.0"],
-	    "steps": ["shake all but soda w ice", "pour over ice into rocks glass", "top with soda"]
-	},
-	{
-	    "name": "Bird of Paradise",
-	    "spirits": ["aperol:1.0", "overproof rum:1.0"],
-	    "mixers": ["pineapple:1.0", "lime:0.5", "simple:0.25"],
-	    "steps": ["shake w ice", "pour over crushed ice into rocks glass"]
-	},
-	{
-	    "name": "Pineapple Mojito",
-	    "spirits": ["white rum:2.0"],
-	    "mixers": ["mint leaves:1.0", "lime:1.0", "pineapple:1.0", "simple:1.0", "soda:3.0"],
-	    "steps": ["muddle mint and syrup", "add rum and juice and shake with ice", "pour over ice and top w/soda"]
-	},
-	{
-	    "name": "GPG (Ginger Gin Fizz)",
-	    "spirits": ["gin:1.5", "aperol:0.5", "angostura:0.1"],
-	    "mixers": ["pineapple:0.75", "lime:0.5", "ginger beer:3.0"],
-	    "steps": ["shake all but ginger beer w ice", "pour over ice in old fashioned glass", "top w ginger beer"]
-	},
-	{
-	    "name":"Paramore",
-	    "spirits": ["gin:1.5", "st germain:0.75", "aperol:0.75"],
-	    "mixers": ["simple:1.0", "lemon:0.75"],
-	    "steps": ["shake w ice", "strain into coupe"]
-	},
-	{
-	    "name":"Austin Sunset",
-	    "spirits": ["tequila silver:1.5", "aperol:0.75"],
-	    "mixers": ["lemon:0.75"],
-	    "steps": ["shake w ice", "strain into coupe"]
-	},
-	{
-	    "name":"Aviation",
-	    "spirits": ["gin:1.5", "maraschino:0.5", "creme de violette:0.1"],
-	    "mixers": ["lemon:0.5"],
-	    "steps": ["shake gin and maraschino w ice", "strain into coupe", "float violette on top", "garnish w cherry"]
-	}
-    ]
+     "drinks": [
+          {
+               "name": "Lions Tail",
+               "mixers": [
+                    "simple:0.5",
+                    "lime:0.5"
+               ],
+               "spirits": [
+                    "bourbon:2.0",
+                    "allspice dram:0.5",
+                    "angostura:0.1"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "pour in coupe",
+                    "top w bitters"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Gold Rush",
+               "mixers": [
+                    "honey syrup:0.75",
+                    "lime:0.75"
+               ],
+               "spirits": [
+                    "bourbon:2.0"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "pour in rocks gloass over ice"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Brown Derby",
+               "mixers": [
+                    "grapefruit:1.0",
+                    "honey syrup:0.5"
+               ],
+               "spirits": [
+                    "bourbon:1.5"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "pour in coupe"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Fitzgerald",
+               "mixers": [
+                    "lemon:0.75",
+                    "simple:0.75"
+               ],
+               "spirits": [
+                    "gin:2.0",
+                    "angostura:0.1"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "pour in coupe",
+                    "top w bitters"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Bello",
+               "mixers": [
+                    "lime:0.5"
+               ],
+               "spirits": [
+                    "gin:2.0",
+                    "lillet blanc:1",
+                    "st germain:0.5",
+                    "orange bitters:0.1"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "pour in rocks glass over ice",
+                    "top w bitters"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Stay Up Late",
+               "mixers": [
+                    "lime:0.5",
+                    "simple:0.5"
+               ],
+               "spirits": [
+                    "gin:1.5",
+                    "cognac:0.5"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "pour in coupe"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Old Fashioned",
+               "mixers": [
+                    "oragnge peel:1.0",
+                    "maraschino cherry:1.0",
+                    "simple:0.5"
+               ],
+               "spirits": [
+                    "bourbon:2.0",
+                    "angostura:0.1"
+               ],
+               "steps": [
+                    "stir in rocks glass with ice",
+                    "add bitters",
+                    "top with cherry"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Margarita",
+               "mixers": [
+                    "lime:0.75"
+               ],
+               "spirits": [
+                    "tequila:2.0",
+                    "Curacao:0.75"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "pour over ice in rocks glass"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Ginger Margarita",
+               "mixers": [
+                    "lime:2.0"
+               ],
+               "spirits": [
+                    "Domaine de Canton:2.0",
+                    "tequila:2.0"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "pour over ice in rocks glass"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Devils margarita",
+               "spirits": [
+                    "blanco tequila:1.5",
+                    "red wine:0.5"
+               ],
+               "mixers": [
+                    "lime:1.0",
+                    "simple:0.75"
+               ],
+               "steps": [
+                    "shake all but wine",
+                    "strain into coupe",
+                    "float wine on top"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Pomegranate margarita",
+               "spirits": [
+                    "tequila:2.0"
+               ],
+               "mixers": [
+                    "pomegranate juice:1.0",
+                    "lime:0.75",
+                    "agave nectar:0.5"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "pour over ice into rocks glass"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "The Gay Blade",
+               "spirits": [
+                    "blanco tequila:1.0",
+                    "red wine:2.0"
+               ],
+               "mixers": [
+                    "lime:0.5",
+                    "agave:0.25",
+                    "grapefruit soda:2.0"
+               ],
+               "steps": [
+                    "shake all but soda w ice",
+                    "pour over ice into rocks glass",
+                    "top with soda"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Bird of Paradise",
+               "spirits": [
+                    "aperol:1.0",
+                    "overproof rum:1.0"
+               ],
+               "mixers": [
+                    "pineapple:1.0",
+                    "lime:0.5",
+                    "simple:0.25"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "pour over crushed ice into rocks glass"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Pineapple Mojito",
+               "spirits": [
+                    "white rum:2.0"
+               ],
+               "mixers": [
+                    "mint leaves:1.0",
+                    "lime:1.0",
+                    "pineapple:1.0",
+                    "simple:1.0",
+                    "soda:3.0"
+               ],
+               "steps": [
+                    "muddle mint and syrup",
+                    "add rum and juice and shake with ice",
+                    "pour over ice and top w/soda"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "GPG (Ginger Gin Fizz)",
+               "spirits": [
+                    "gin:1.5",
+                    "aperol:0.5",
+                    "angostura:0.1"
+               ],
+               "mixers": [
+                    "pineapple:0.75",
+                    "lime:0.5",
+                    "ginger beer:3.0"
+               ],
+               "steps": [
+                    "shake all but ginger beer w ice",
+                    "pour over ice in old fashioned glass",
+                    "top w ginger beer"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Paramore",
+               "spirits": [
+                    "gin:1.5",
+                    "st germain:0.75",
+                    "aperol:0.75"
+               ],
+               "mixers": [
+                    "simple:1.0",
+                    "lemon:0.75"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "strain into coupe"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Austin Sunset",
+               "spirits": [
+                    "tequila silver:1.5",
+                    "aperol:0.75"
+               ],
+               "mixers": [
+                    "lemon:0.75"
+               ],
+               "steps": [
+                    "shake w ice",
+                    "strain into coupe"
+               ],
+               "glass": "coupe"
+          },
+          {
+               "name": "Aviation",
+               "spirits": [
+                    "gin:1.5",
+                    "maraschino:0.5",
+                    "creme de violette:0.1"
+               ],
+               "mixers": [
+                    "lemon:0.5"
+               ],
+               "steps": [
+                    "shake gin and maraschino w ice",
+                    "strain into coupe",
+                    "float violette on top",
+                    "garnish w cherry"
+               ],
+               "glass": "coupe"
+          }
+     ],
+     "spirits": [
+          {
+               "name": "bourbon",
+               "calories_per_oz": 64.0,
+               "abv": 40.0
+          },
+          {
+               "name": "gin",
+               "calories_per_oz": 64.0,
+               "abv": 40.0
+          },
+          {
+               "name": "cognac",
+               "calories_per_oz": 69.0,
+               "abv": 40.0
+          },
+          {
+               "name": "tequila",
+               "calories_per_oz": 64.0,
+               "abv": 40.0
+          },
+          {
+               "name": "blanco tequila",
+               "calories_per_oz": 64.0,
+               "abv": 40.0
+          },
+          {
+               "name": "tequila silver",
+               "calories_per_oz": 64.0,
+               "abv": 40.0
+          },
+          {
+               "name": "Curacao",
+               "calories_per_oz": 76.0,
+               "abv": 30.0
+          },
+          {
+               "name": "mezcal",
+               "calories_per_oz": 70.0,
+               "abv": 45.0
+          },
+          {
+               "name": "rye",
+               "calories_per_oz": 64.0,
+               "abv": 40.0
+          },
+          {
+               "name": "white rum",
+               "calories_per_oz": 64.0,
+               "abv": 40.0
+          },
+          {
+               "name": "overproof rum",
+               "calories_per_oz": 96.0,
+               "abv": 75.5
+          },
+          {
+               "name": "red wine",
+               "calories_per_oz": 25.0,
+               "abv": 13.0
+          },
+          {
+               "name": "aperol",
+               "calories_per_oz": 46.0,
+               "abv": 11.0
+          },
+          {
+               "name": "angostura",
+               "calories_per_oz": 47.0,
+               "abv": 44.7
+          },
+          {
+               "name": "orange bitters",
+               "calories_per_oz": 34.0,
+               "abv": 40.0
+          },
+          {
+               "name": "st germain",
+               "calories_per_oz": 92.0,
+               "abv": 20.0
+          },
+          {
+               "name": "lillet blanc",
+               "calories_per_oz": 56.0,
+               "abv": 17.0
+          },
+          {
+               "name": "allspice dram",
+               "calories_per_oz": 76.0,
+               "abv": 30.0
+          },
+          {
+               "name": "Domaine de Canton",
+               "calories_per_oz": 67.0,
+               "abv": 28.0
+          },
+          {
+               "name": "maraschino",
+               "calories_per_oz": 87.0,
+               "abv": 32.0
+          },
+          {
+               "name": "creme de violette",
+               "calories_per_oz": 105.0,
+               "abv": 20.0
+          },
+          {
+               "name": "apricot liqueur",
+               "calories_per_oz": 85.0,
+               "abv": 20.0
+          },
+          {
+               "name": "sloe gin",
+               "calories_per_oz": 84.0,
+               "abv": 26.0
+          },
+          {
+               "name": "cassis",
+               "calories_per_oz": 106.0,
+               "abv": 15.0
+          },
+          {
+               "name": "montenegro",
+               "calories_per_oz": 91.0,
+               "abv": 23.0
+          },
+          {
+               "name": "giffard banane",
+               "calories_per_oz": 83.0,
+               "abv": 35.0
+          }
+     ],
+     "mixers": [
+          {
+               "name": "simple",
+               "calories_per_oz": 77.0,
+               "abv": 0.0
+          },
+          {
+               "name": "honey syrup",
+               "calories_per_oz": 72.0,
+               "abv": 0.0
+          },
+          {
+               "name": "grapefruit",
+               "calories_per_oz": 12.0,
+               "abv": 0.0
+          },
+          {
+               "name": "lemon",
+               "calories_per_oz": 7.0,
+               "abv": 0.0
+          },
+          {
+               "name": "oragnge peel",
+               "calories_per_oz": 0.0,
+               "abv": 0.0
+          },
+          {
+               "name": "maraschino cherry",
+               "calories_per_oz": 0.0,
+               "abv": 0.0
+          },
+          {
+               "name": "pomegranate juice",
+               "calories_per_oz": 32.0,
+               "abv": 0.0
+          },
+          {
+               "name": "agave nectar",
+               "calories_per_oz": 64.0,
+               "abv": 0.0
+          },
+          {
+               "name": "agave",
+               "calories_per_oz": 64.0,
+               "abv": 0.0
+          },
+          {
+               "name": "grapefruit soda",
+               "calories_per_oz": 30.0,
+               "abv": 0.0
+          },
+          {
+               "name": "pineapple",
+               "calories_per_oz": 35.0,
+               "abv": 0.0
+          },
+          {
+               "name": "mint leaves",
+               "calories_per_oz": 0.0,
+               "abv": 0.0
+          },
+          {
+               "name": "soda",
+               "calories_per_oz": 0.0,
+               "abv": 0.0
+          },
+          {
+               "name": "ginger beer",
+               "calories_per_oz": 40.0,
+               "abv": 0.0
+          },
+          {
+               "name": "lime",
+               "calories_per_oz": 6.0,
+               "abv": 0.0
+          }
+     ]
 }

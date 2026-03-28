@@ -3,22 +3,69 @@ import os
 import json
 import plyer
 
+NUTRITION_FILE = 'ingredients_nutrition.json'
+
 class DrinksDB:
     def __init__(self):
         dbpath = './drinks.db'
         self._con = sqlite3.connect(dbpath)
         self._cur = self._con.cursor()
         self._cur.execute("CREATE TABLE IF NOT EXISTS drinks(id INTEGER PRIMARY KEY AUTOINCREMENT, recipe)")
-        self._cur.execute("CREATE TABLE IF NOT EXISTS spirits(spirit TEXT PRIMARY KEY)")
-        self._cur.execute("CREATE TABLE IF NOT EXISTS mixers(mixer TEXT PRIMARY KEY)")
+        self._cur.execute("CREATE TABLE IF NOT EXISTS spirits(spirit TEXT PRIMARY KEY, calories_per_oz REAL, abv REAL)")
+        self._cur.execute("CREATE TABLE IF NOT EXISTS mixers(mixer TEXT PRIMARY KEY, calories_per_oz REAL, abv REAL)")
         self._cur.execute("CREATE TABLE IF NOT EXISTS steps(step TEXT PRIMARY KEY)")
         self._cur.execute("CREATE TABLE IF NOT EXISTS glasses(glass TEXT PRIMARY KEY)")
+        try:
+            self._cur.execute("ALTER TABLE spirits ADD COLUMN calories_per_oz REAL")
+        except:
+            pass
+        try:
+            self._cur.execute("ALTER TABLE spirits ADD COLUMN abv REAL")
+        except:
+            pass
+        try:
+            self._cur.execute("ALTER TABLE mixers ADD COLUMN calories_per_oz REAL")
+        except:
+            pass
+        try:
+            self._cur.execute("ALTER TABLE mixers ADD COLUMN abv REAL")
+        except:
+            pass
         query = "INSERT OR IGNORE INTO glasses (glass) VALUES (?)"
         self._cur.execute(query, ('coupe',))
         self._cur.execute(query, ('rocks',))
         self._cur.execute(query, ('wine',))
         self._cur.execute(query, ('hiball',))
         self._con.commit()
+        self._populate_nutrition_if_needed()
+        
+    def _populate_nutrition_if_needed(self):
+        spirits = self.list_spirits()
+        mixers = self.list_mixers()
+        needs_population = False
+        
+        if not spirits and not mixers:
+            needs_population = True
+        else:
+            for s in spirits:
+                nutrition = self.get_spirit_nutrition(s)
+                if not nutrition or nutrition['calories_per_oz'] is None:
+                    needs_population = True
+                    break
+            if not needs_population:
+                for m in mixers:
+                    nutrition = self.get_mixer_nutrition(m)
+                    if not nutrition or nutrition['calories_per_oz'] is None:
+                        needs_population = True
+                        break
+        
+        if needs_population and os.path.exists(NUTRITION_FILE):
+            with open(NUTRITION_FILE) as f:
+                data = json.load(f)
+            for spirit, values in data.get('spirits', {}).items():
+                self.set_spirit_nutrition(spirit, values['calories_per_oz'], values['abv'])
+            for mixer, values in data.get('mixers', {}).items():
+                self.set_mixer_nutrition(mixer, values['calories_per_oz'], values['abv'])
         
     def name_from_namespec(self, namespec):
         return namespec[0:namespec.index(':')]
@@ -36,9 +83,9 @@ class DrinksDB:
         serialized_drink = json.dumps(drink)
         print('serialized drink: %s' % serialized_drink)
         for s in drink["spirits"]:
-            self._cur.execute(f"INSERT OR IGNORE INTO spirits VALUES (\'{self.name_from_namespec(s)}\')")
+            self._cur.execute(f"INSERT OR IGNORE INTO spirits (spirit, calories_per_oz, abv) VALUES (\'{self.name_from_namespec(s)}\', NULL, NULL)")
         for m in drink["mixers"]:
-            self._cur.execute(f"INSERT OR IGNORE INTO mixers VALUES (\'{self.name_from_namespec(m)}\')")
+            self._cur.execute(f"INSERT OR IGNORE INTO mixers (mixer, calories_per_oz, abv) VALUES (\'{self.name_from_namespec(m)}\', NULL, NULL)")
         for s in drink["steps"]:
             self._cur.execute(f"INSERT OR IGNORE INTO steps VALUES (\'{s}\')")
         res = self._cur.execute(f"SELECT * FROM glasses WHERE glass = \'{drink['glass']}\'")
@@ -65,9 +112,9 @@ class DrinksDB:
         if not "glass" in drink:
             drink["glass"] = 'coupe'
         for s in drink["spirits"]:
-            self._cur.execute(f"INSERT OR IGNORE INTO spirits VALUES (\'{self.name_from_namespec(s)}\')")
+            self._cur.execute(f"INSERT OR IGNORE INTO spirits (spirit, calories_per_oz, abv) VALUES (\'{self.name_from_namespec(s)}\', NULL, NULL)")
         for m in drink["mixers"]:
-            self._cur.execute(f"INSERT OR IGNORE INTO mixers VALUES (\'{self.name_from_namespec(m)}\')")
+            self._cur.execute(f"INSERT OR IGNORE INTO mixers (mixer, calories_per_oz, abv) VALUES (\'{self.name_from_namespec(m)}\', NULL, NULL)")
         for s in drink["steps"]:
             self._cur.execute(f"INSERT OR IGNORE INTO steps VALUES (\'{s}\')")
         res = self._cur.execute(f"SELECT * FROM glasses WHERE glass = \"{drink['glass']}\"")
@@ -101,12 +148,36 @@ class DrinksDB:
         
     def import_drinks_from_file(self, filename):
         with open(filename) as f:
-            drinks = json.load(f)    
-        for d in drinks['drinks']:
+            data = json.load(f)    
+        for d in data.get('drinks', []):
             self.new_drink(d)
+        for s in data.get('spirits', []):
+            if 'name' in s and s.get('calories_per_oz') is not None and s.get('abv') is not None:
+                self.set_spirit_nutrition(s['name'], s['calories_per_oz'], s['abv'])
+        for m in data.get('mixers', []):
+            if 'name' in m and m.get('calories_per_oz') is not None and m.get('abv') is not None:
+                self.set_mixer_nutrition(m['name'], m['calories_per_oz'], m['abv'])
 
     def export_drinks_to_file(self, filename):
-        output = { 'drinks' : self.find_drinks() }
+        output = { 
+            'drinks' : self.find_drinks(),
+            'spirits': [],
+            'mixers': []
+        }
+        for s in self.list_spirits():
+            nutrition = self.get_spirit_nutrition(s)
+            output['spirits'].append({
+                'name': s,
+                'calories_per_oz': nutrition['calories_per_oz'] if nutrition else None,
+                'abv': nutrition['abv'] if nutrition else None
+            })
+        for m in self.list_mixers():
+            nutrition = self.get_mixer_nutrition(m)
+            output['mixers'].append({
+                'name': m,
+                'calories_per_oz': nutrition['calories_per_oz'] if nutrition else None,
+                'abv': nutrition['abv'] if nutrition else None
+            })
         with open(filename, "w") as f:
             json.dump(output, f, indent=5)
         
@@ -119,6 +190,28 @@ class DrinksDB:
         res = self._cur.execute(f"SELECT * FROM mixers")
         mixers = res.fetchall()
         return [ m[0] for m in mixers ]
+
+    def set_spirit_nutrition(self, spirit, calories_per_oz, abv):
+        self._cur.execute(f"INSERT OR REPLACE INTO spirits (spirit, calories_per_oz, abv) VALUES (\'{spirit}\', {calories_per_oz}, {abv})")
+        self._con.commit()
+
+    def set_mixer_nutrition(self, mixer, calories_per_oz, abv):
+        self._cur.execute(f"INSERT OR REPLACE INTO mixers (mixer, calories_per_oz, abv) VALUES (\'{mixer}\', {calories_per_oz}, {abv})")
+        self._con.commit()
+
+    def get_spirit_nutrition(self, spirit):
+        res = self._cur.execute(f"SELECT calories_per_oz, abv FROM spirits WHERE spirit = \'{spirit}\'")
+        row = res.fetchone()
+        if row:
+            return {'calories_per_oz': row[0], 'abv': row[1]}
+        return None
+
+    def get_mixer_nutrition(self, mixer):
+        res = self._cur.execute(f"SELECT calories_per_oz, abv FROM mixers WHERE mixer = \'{mixer}\'")
+        row = res.fetchone()
+        if row:
+            return {'calories_per_oz': row[0], 'abv': row[1]}
+        return None
 
     def list_steps(self):
         res = self._cur.execute(f"SELECT * FROM steps")
