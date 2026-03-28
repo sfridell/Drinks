@@ -99,12 +99,14 @@ class MutableSpinner(Spinner):
             popup.open()
             
 class DisplayDrinkPopup(Popup):
-    def __init__(self, name, glass, volume, details):
+    def __init__(self, name, glass, volume, calories, abv, details):
         super(DisplayDrinkPopup, self).__init__()
         self.title = name.upper()
         self.name = name
         self.glass.source = f"./images/{glass}-glass.svg"
-        self.ounces.text = f"{volume}oz"
+        self.ounces.text = f"{volume} oz"
+        self.calories.text = f"{calories} cal"
+        self.abv.text = f"{abv}% ABV"
         self.details.text = details
 
 class NewDrinkPopup(Popup):
@@ -210,8 +212,12 @@ class HomeScreen(BoxLayout):
         name = text
         glass = drinks.process_command(["show", name, "--no_headers", "--fields", "glass"]).getvalue().rstrip()
         volume = drinks.process_command(["show", name, "--no_headers", "--fields", "volume"]).getvalue().rstrip()
+        calories_raw = drinks.process_command(["show", name, "--no_headers", "--fields", "calories"]).getvalue().rstrip()
+        calories = str(int(float(calories_raw)))
+        abv_raw = drinks.process_command(["show", name, "--no_headers", "--fields", "abv"]).getvalue().rstrip()
+        abv = abv_raw.split('.')[0] if '.' in abv_raw else abv_raw.rstrip('%')
         details = drinks.process_command(["show", name, "--fields", "ingredients", "instructions"]).getvalue().rstrip()
-        popup = Factory.DisplayDrinkPopup(name, glass, volume, details)
+        popup = Factory.DisplayDrinkPopup(name, glass, volume, calories, abv, details)
         popup.open()
 
     def input_new_drink(self):
