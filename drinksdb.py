@@ -8,7 +8,7 @@ NUTRITION_FILE = 'ingredients_nutrition.json'
 class DrinksDB:
     def __init__(self):
         dbpath = './drinks.db'
-        self._con = sqlite3.connect(dbpath)
+        self._con = sqlite3.connect(dbpath, check_same_thread=False)
         self._cur = self._con.cursor()
         self._cur.execute("CREATE TABLE IF NOT EXISTS drinks(id INTEGER PRIMARY KEY AUTOINCREMENT, recipe)")
         self._cur.execute("CREATE TABLE IF NOT EXISTS spirits(spirit TEXT PRIMARY KEY, calories_per_oz REAL, abv REAL)")
