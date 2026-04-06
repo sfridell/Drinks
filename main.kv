@@ -88,6 +88,230 @@
             color: [1, 1, 1, 1]
             on_release: app.root.delete_drink_complete(root, root.parent_popup)
 
+<NutritionInputPopup>
+    title: ""
+    auto_dismiss: False
+    size_hint: 0.8, 0.35
+    background_color: [0.2, 0.2, 0.2, 1]
+    background: ''
+    
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 10
+        
+        canvas.before:
+            Color:
+                rgba: [0.2, 0.2, 0.2, 1]
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        MDLabel:
+            text: f"Enter nutrition for {root.ingredient_name}"
+            color: [1, 1, 1, 1]
+            
+        BoxLayout:
+            orientation: "horizontal"
+            
+            MDTextField:
+                id: calories_input
+                hint_text: "Calories/oz"
+                input_filter: 'float'
+                line_color_normal: [0.7, 0.7, 0.7, 1]
+                line_color_focus: [1, 1, 1, 1]
+                hint_text_color_normal: [0.7, 0.7, 0.7, 1]
+                hint_text_color_focus: [1, 1, 1, 1]
+                text_color_normal: [1, 1, 1, 1]
+                text_color_focus: [1, 1, 1, 1]
+                fill_color_normal: [0.15, 0.15, 0.15, 0.5]
+                fill_color_focus: [0.2, 0.2, 0.2, 0.7]
+                
+            MDTextField:
+                id: abv_input
+                hint_text: "ABV %"
+                input_filter: 'float'
+                line_color_normal: [0.7, 0.7, 0.7, 1]
+                line_color_focus: [1, 1, 1, 1]
+                hint_text_color_normal: [0.7, 0.7, 0.7, 1]
+                hint_text_color_focus: [1, 1, 1, 1]
+                text_color_normal: [1, 1, 1, 1]
+                text_color_focus: [1, 1, 1, 1]
+                fill_color_normal: [0.15, 0.15, 0.15, 0.5]
+                fill_color_focus: [0.2, 0.2, 0.2, 0.7]
+                
+        BoxLayout:
+            orientation: "horizontal"
+            size_hint_y: None
+            height: '48dp'
+            
+            MDIconButton:
+                icon: "check"
+                theme_icon_color: "Custom"
+                icon_color: [1, 1, 1, 1]
+                on_release: root.save_nutrition()
+                
+            MDIconButton:
+                icon: "skip-next"
+                theme_icon_color: "Custom"
+                icon_color: [1, 1, 1, 1]
+                on_release: root.dismiss()
+
+<IngredientRow>:
+    orientation: 'horizontal'
+    size_hint_y: None
+    height: '40dp'
+    
+    canvas.before:
+        Color:
+            rgba: [0.15, 0.15, 0.15, 1]
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    
+    Label:
+        text: root.ingredient_name
+        size_hint_x: 0.4
+        color: [1, 1, 1, 1]
+        
+    Label:
+        text: root.calories
+        size_hint_x: 0.3
+        color: [1, 1, 1, 1]
+        
+    Label:
+        text: root.abv
+        size_hint_x: 0.2
+        color: [1, 1, 1, 1]
+        
+    MDIconButton:
+        icon: "pencil"
+        size_hint_x: 0.1
+        theme_icon_color: "Custom"
+        icon_color: [1, 1, 1, 1]
+        on_release: root.callback()
+
+<IngredientManagerPopup>:
+    title: "Ingredient Manager"
+    auto_dismiss: False
+    size_hint: 0.9, 0.9
+    background_color: [0.2, 0.2, 0.2, 1]
+    background: ''
+    
+    BoxLayout:
+        orientation: "vertical"
+        padding: 10
+        spacing: 5
+        
+        canvas.before:
+            Color:
+                rgba: [0.2, 0.2, 0.2, 1]
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        
+        MDLabel:
+            text: "Spirits"
+            color: [1, 1, 1, 1]
+            
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: '30dp'
+            
+            canvas.before:
+                Color:
+                    rgba: [0.3, 0.3, 0.3, 1]
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            
+            Label:
+                text: "Name"
+                size_hint_x: 0.4
+                color: [1, 1, 1, 1]
+                font_size: '12sp'
+                
+            Label:
+                text: "Cal/oz"
+                size_hint_x: 0.3
+                color: [1, 1, 1, 1]
+                font_size: '12sp'
+                
+            Label:
+                text: "ABV%"
+                size_hint_x: 0.2
+                color: [1, 1, 1, 1]
+                font_size: '12sp'
+                
+            Widget:
+                size_hint_x: 0.1
+            
+        RecycleView:
+            id: spirits_list
+            viewclass: 'IngredientRow'
+            
+            RecycleBoxLayout:
+                default_size: None, dp(40)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+                
+        MDLabel:
+            text: "Mixers"
+            color: [1, 1, 1, 1]
+            
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: '30dp'
+            
+            canvas.before:
+                Color:
+                    rgba: [0.3, 0.3, 0.3, 1]
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            
+            Label:
+                text: "Name"
+                size_hint_x: 0.4
+                color: [1, 1, 1, 1]
+                font_size: '12sp'
+                
+            Label:
+                text: "Cal/oz"
+                size_hint_x: 0.3
+                color: [1, 1, 1, 1]
+                font_size: '12sp'
+                
+            Label:
+                text: "ABV%"
+                size_hint_x: 0.2
+                color: [1, 1, 1, 1]
+                font_size: '12sp'
+                
+            Widget:
+                size_hint_x: 0.1
+            
+        RecycleView:
+            id: mixers_list
+            viewclass: 'IngredientRow'
+            
+            RecycleBoxLayout:
+                default_size: None, dp(40)
+                default_size_hint: 1, None
+                size_hint_y: None
+                height: self.minimum_height
+                orientation: 'vertical'
+                
+        MDIconButton:
+            icon: "close"
+            theme_icon_color: "Custom"
+            icon_color: [1, 1, 1, 1]
+            on_release: root.dismiss()
+
 <IngredientSelectPair>
     id: select_pair
     orientation: "horizontal"
@@ -100,6 +324,7 @@
         color: [1, 1, 1, 1]
     MutableSpinner:
         id: ingredient_input
+        selection_type: root.selection_type
         background_color: [0.15, 0.15, 0.15, 1]
         color: [1, 1, 1, 1]
 	
@@ -266,6 +491,9 @@
                 size_hint_x: 0.5
                 spacing: 0
                 
+                Widget:
+                    size_hint_y: 1
+                
                 Label:
                     id: drink_ounces
                     font_size: '24sp'
@@ -289,6 +517,9 @@
                     text: ""
                     size_hint_y: None
                     height: '32dp'
+                    
+                Widget:
+                    size_hint_y: 1
                 
             SvgWidget:
                 id: drink_glass
@@ -379,6 +610,13 @@
             theme_icon_color: "Custom"
             icon_color: [1, 1, 1, 1]
             on_release: root.export_to_json()
+
+        TooltipMDIconButton:
+            icon: "liquor"
+            tooltip_text: "manage ingredients"
+            theme_icon_color: "Custom"
+            icon_color: [1, 1, 1, 1]
+            on_release: root.open_ingredient_manager()
 
     RecycleView:
         id: drink_list_view

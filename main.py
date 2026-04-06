@@ -77,26 +77,124 @@ class ConfirmDeletePopup(Popup):
 class InputPopup(Popup):
     caller = ObjectProperty(None)
 
-    def __init__(self, target=None, **kwargs):
+    def __init__(self, target=None, selection_type='', **kwargs):
         super(InputPopup, self).__init__()
         self.target = target
+        self.selection_type = selection_type
         
     def save_input(self, *args):
-        self.target.values.append(self.input_text.text)
-        self.target.text = self.input_text.text
+        new_name = self.input_text.text
+        self.target.values.append(new_name)
+        self.target.text = new_name
+        self.dismiss()
+        
+        if self.selection_type in ['spirits', 'mixers']:
+            result = drinks.process_command([self.selection_type, 'list', '--nutrition'])
+            lines = result.getvalue().splitlines()
+            
+            has_nutrition = False
+            exists = False
+            for line in lines:
+                if line.startswith(f"{new_name}\t"):
+                    exists = True
+                    if '\t--\t' not in line:
+                        has_nutrition = True
+                    break
+            
+            if not exists or not has_nutrition:
+                popup = Factory.NutritionInputPopup(self.selection_type, new_name)
+                popup.open()
+
+class NutritionInputPopup(Popup):
+    ingredient_type = StringProperty('')
+    ingredient_name = StringProperty('')
+    
+    def __init__(self, ingredient_type, ingredient_name, **kwargs):
+        super(NutritionInputPopup, self).__init__()
+        self.ingredient_type = ingredient_type
+        self.ingredient_name = ingredient_name
+        
+    def save_nutrition(self, *args):
+        calories = self.ids.calories_input.text
+        abv = self.ids.abv_input.text
+        drinks.process_command([self.ingredient_type, 'set', self.ingredient_name, 
+                               '--calories', calories, '--abv', abv])
         self.dismiss()
 
 class MutableSpinner(Spinner):
-    def __init__(self, **kwargs):
+    selection_type = StringProperty('')
+    
+    def __init__(self, selection_type='', **kwargs):
         super(MutableSpinner, self).__init__()
+        self.selection_type = selection_type
         self.text = '<new>'
         self.values = ['<new>']
         self.bind(text=self.on_value_select)
 
     def on_value_select(self, obj, text):
         if text == '<new>':
-            popup = Factory.InputPopup(self)
+            popup = Factory.InputPopup(self, self.selection_type)
             popup.open()
+
+class IngredientRow(BoxLayout):
+    ingredient_name = StringProperty('')
+    ingredient_type = StringProperty('')
+    calories = StringProperty('')
+    abv = StringProperty('')
+    callback = ObjectProperty(None)
+
+class IngredientManagerPopup(Popup):
+    def __init__(self, **kwargs):
+        super(IngredientManagerPopup, self).__init__()
+        self.refresh_spirits()
+        self.refresh_mixers()
+        
+    def refresh_spirits(self):
+        result = drinks.process_command(['spirits', 'list', '--nutrition'])
+        lines = result.getvalue().splitlines()
+        data = []
+        for line in lines:
+            parts = line.split('\t')
+            if len(parts) >= 3:
+                name = parts[0]
+                cal = parts[1].replace(' cal/oz', '').replace('--', 'N/A')
+                abv = parts[2].replace('% ABV', '').replace('--', 'N/A')
+                data.append({
+                    'ingredient_name': name,
+                    'ingredient_type': 'spirits',
+                    'calories': cal,
+                    'abv': abv,
+                    'callback': partial(self.edit_ingredient, 'spirits', name)
+                })
+        self.ids.spirits_list.data = data
+        
+    def refresh_mixers(self):
+        result = drinks.process_command(['mixers', 'list', '--nutrition'])
+        lines = result.getvalue().splitlines()
+        data = []
+        for line in lines:
+            parts = line.split('\t')
+            if len(parts) >= 3:
+                name = parts[0]
+                cal = parts[1].replace(' cal/oz', '').replace('--', 'N/A')
+                abv = parts[2].replace('% ABV', '').replace('--', 'N/A')
+                data.append({
+                    'ingredient_name': name,
+                    'ingredient_type': 'mixers',
+                    'calories': cal,
+                    'abv': abv,
+                    'callback': partial(self.edit_ingredient, 'mixers', name)
+                })
+        self.ids.mixers_list.data = data
+        
+    def edit_ingredient(self, ingredient_type, name, *args):
+        popup = Factory.NutritionInputPopup(ingredient_type, name)
+        popup.bind(on_dismiss=lambda x: self.refresh_lists())
+        popup.open()
+        
+    def refresh_lists(self):
+        self.refresh_spirits()
+        self.refresh_mixers()
             
 class DisplayDrinkPopup(Popup):
     def __init__(self, name, glass, volume, calories, abv, details):
@@ -173,7 +271,7 @@ class NewDrinkPopup(Popup):
         self.caller.show_drink(self.ids.name_input.text)
         
 class IngredientSelectPair(BoxLayout):
-    selection_type = ObjectProperty()
+    selection_type = StringProperty('')
     
     def __init__(self, selection_type, **kwargs):
         super(IngredientSelectPair, self).__init__()
@@ -286,6 +384,10 @@ class HomeScreen(BoxLayout):
             uri = SharedStorage().copy_to_shared(filename, collection=Environment.DIRECTORY_DOWNLOADS)
             print("copied file " + filename + " to URI: " + str(uri))
         popup = Factory.InfoPopup("DB exported to file: " + filename)
+        popup.open()
+        
+    def open_ingredient_manager(self):
+        popup = Factory.IngredientManagerPopup()
         popup.open()
         
 class DrinksApp(MDApp):
